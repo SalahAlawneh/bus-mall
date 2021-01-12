@@ -19,6 +19,8 @@ function ProductImage(productName, link) {
     this.votes = 0;
     this.timeDisplayed = 0;
     allProducts.push(this);
+
+    storeData();
 }
 
 // creating object
@@ -77,6 +79,8 @@ displayRandomImages();
 imagesSection.addEventListener('click', handleVote);
 
 function handleVote(event) {
+    event.preventDefault();
+
     var clickedImage;
     if (event.target.id === 'left_img') {
         clickedImage = currentLeftSideImage;
@@ -98,10 +102,11 @@ function handleVote(event) {
 }
 
 function displayResults() {
+    resultsList.innerHTML='';
     var listItem;
     for (var i = 0; i < allProducts.length; i++) {
         listItem = document.createElement('li');
-        listItem.textContent = 'Displayed Times For ' + allProducts[i].productName + ' is ' + allProducts[i].timeDisplayed + ' and votes are ' + allProducts[i].votes;
+        listItem.textContent = `Displayed Times For ${allProducts[i].productName} is ${allProducts[i].timeDisplayed} and votes are ${allProducts[i].votes}`;
         resultsList.appendChild(listItem);
     }
 }
@@ -127,7 +132,7 @@ function renderChart() {
             labels: arrayOfProductNames, // array of labels (names of the Product)
             datasets: [
                 {
-                    label: '# of Goat Clicks',
+                    label: '# of Product Clicks',
                     data: arrayOfProductCount, // array of values (count for each Product when it was clicked)
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
@@ -148,7 +153,7 @@ function renderChart() {
                     borderWidth: 1
                 },
                 {
-                    label: 'Time shown for the Goat',
+                    label: 'Time shown for the Product',
                     data: arrayOfProductShown, // array of values (count for each Product when it was clicked)
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
@@ -181,3 +186,25 @@ function renderChart() {
     });
 }
 
+// adding local storage
+
+var clearDataBtn= document.getElementById('clearLocalStorage');
+
+function storeData(){
+    localStorage.setItem('product',JSON.stringify(allProducts));
+}
+
+function clearLocalStorage() {
+    localStorage.clear();
+    allProducts=[];
+    displayResults();
+}
+
+function checkAndRestore(){
+    if (localStorage.length>0) {
+        allProducts=JSON.parse(localStorage.getItem('product'));
+    }
+}
+
+clearDataBtn.addEventListener('click',clearLocalStorage);
+checkAndRestore();
